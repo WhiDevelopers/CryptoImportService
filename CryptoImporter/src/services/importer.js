@@ -21,8 +21,11 @@ module.exports = {
 
         }).on("error", err => {
             console.log("Error getting json crypto data: " + err.message);
-            response(err);
+            callback(err);
         });
+    },
+    getLastDataFromDb: function (callback) {
+        callback("test");
     }
 }
 

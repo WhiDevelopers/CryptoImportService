@@ -4,10 +4,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var mongo = require('mongodb')
-
-var indexRouter = require('./api/index');
-var dataRouter = require('./api/data');
+var indexRouter = require('./src/api/index');
+var dataRouter = require('./src/api/data');
 
 var app = express();
 

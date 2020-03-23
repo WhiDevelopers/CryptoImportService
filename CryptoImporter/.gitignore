@@ -2,6 +2,9 @@
 node_modules
 /dist
 
+# db folder
+/data
+
 # local env files
 .env.local
 .env.*.local

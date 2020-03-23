@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  h3.
+    Stuff
+  ul
+    each entry in data
+      li #{entry.name} #{entry.symbol}
+

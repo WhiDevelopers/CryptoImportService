@@ -3,15 +3,18 @@ var router = express.Router();
 var importer = require('../services/importer');
 
 /* GET show last crypto data */
-// router.get('/', (req, res, next) => {
-//   importer.getLastDataFromDb((response) => {
-//     res.render('index');
-//     // res.send('test');
-//   });
-// });
-
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+router.get('/', (req, res, next) => {
+  importer.getLastDataFromDb((err, dataJson) => {
+    console.log('data: ' + dataJson[0].name)
+    if (err) {
+      res.send(err);
+    } else {
+      res.render('datalist', { 
+        title: "Data",
+        data: dataJson
+       });
+    }
+  });
 });
 
 /* GET instert crypto data to db */

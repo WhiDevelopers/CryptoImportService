@@ -1,6 +1,6 @@
 # CryptoImportService
 
-Micro-service that imports crypto data to database
+Webapp that imports crypto data to database
 
 Install node & npm
 

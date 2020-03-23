@@ -15,3 +15,6 @@ Run in project folder in terminal
 ```
 mevn serve
 ```
+
+
+set DEBUG=myapp:* & npm start

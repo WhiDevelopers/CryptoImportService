@@ -12,9 +12,9 @@ cd CryptoImporter
 npm install
 ```
 
-Run app in the same folder
+Run app in the same folder with script by typing
 ```
-set DEBUG=cryptoimporter:* & npm start
+npm run dev
 ```
 
-
+When the server is running, you don't need to restart after changes, saving triggers rebuild, then just refresh

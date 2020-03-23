@@ -6,15 +6,15 @@ Install node & npm
 
 https://nodejs.org/en/
 
-Install mevn-cli
+Install npm dependecies
 ```
-npm install -g mevn-cli
-```
-
-Run in project folder in terminal
-```
-mevn serve
+cd CryptoImporter
+npm install
 ```
 
+Run app in the same folder
+```
+set DEBUG=cryptoimporter:* & npm start
+```
 
-set DEBUG=myapp:* & npm start
+

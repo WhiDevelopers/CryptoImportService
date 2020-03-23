@@ -4,7 +4,9 @@ var importer = require('../services/importer');
 
 /* GET users listing. */
 router.get('/latest', (req, res, next) => {
-  importer.hello(res);
+  importer.getDataAndInsertToDb((response) => {
+      res.send(response)
+  });
 });
 
 module.exports = router;

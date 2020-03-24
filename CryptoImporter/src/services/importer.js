@@ -9,13 +9,12 @@ function getCryptoJsonFromWeb(onSuccess, onFail) {
     https.get(url, (resp) => {
         let data = '';
 
-        // A chunk of data has been recieved.
         resp.on('data', (chunk) => {
-            data += chunk;
+            data += chunk; // A chunk of data has been recieved.
         });
 
-        // The whole response has been received. Print out the result.
-        resp.on('end', () => {
+
+        resp.on('end', () => { // The whole response has been received.
             var json = JSON.parse(data); // FIXME parse might fail
             onSuccess(json);
         });
@@ -27,25 +26,22 @@ function getCryptoJsonFromWeb(onSuccess, onFail) {
 }
 
 function getDataFromDb(onSuccess, onFail) {
-    MongoClient.connect(mongoUrl, function (err, client) {
+    MongoClient.connect(mongoUrl, function(err, client) {
         const db = client.db(dbName);
 
         if (err) {
             console.log('Unable to connect to the db', err);
-            // db connection fail
-            onFail(err);
+            onFail(err); // db connection fail
         } else {
             db.collection('CryptoImporter', (err, collection) => {
                 if (err) {
                     console.log('db err', err);
                     db.close();
-                    // getting db collection fail
-                    onFail(err);
+                    onFail(err); // getting db collection fail
                 } else
-                    collection.find({}).toArray(function (err, result) {
+                    collection.find({}).toArray(function(err, result) {
                         if (err) {
-                            // getting from collection fail
-                            onFail(err);
+                            onFail(err); // getting from collection fail
                         } else if (result.length) {
                             onSuccess(result[0]["data"]);
                         } else {
@@ -59,7 +55,7 @@ function getDataFromDb(onSuccess, onFail) {
 }
 
 function insertDataToDb(json, onSuccess, onFail) {
-    MongoClient.connect(mongoUrl, function (err, client) {
+    MongoClient.connect(mongoUrl, function(err, client) {
         const db = client.db(dbName);
 
         if (err) {
@@ -72,7 +68,6 @@ function insertDataToDb(json, onSuccess, onFail) {
                     onFail(err);
                 } else
                     collection.insertOne(json, () => {
-                        console.log('json inserted');
                         onSuccess(json)
                     });
             });
@@ -80,29 +75,37 @@ function insertDataToDb(json, onSuccess, onFail) {
     });
 }
 
+function getDataAndInsertToDb(onSuccess, onFail) {
+    getCryptoJsonFromWeb((json) => {
+        insertDataToDb(json, () => {
+            onSuccess();
+        }, (err) => {
+            onFail(err); // insert to db failed
+        });
+    }, (err) => {
+        onFail(err); // get data from web failed
+    });
+}
+
+function startDataUpdateInterval() {
+    var i = 0;
+    var fun = getDataAndInsertToDb(() => {
+        console.log("Data inserted");
+    }, (err) => {
+        console.log(`Crypto data get failed: ${err}`);
+    });
+
+    setInterval(() => {
+        var fun = getDataAndInsertToDb(() => {
+            console.log("Data inserted");
+        }, (err) => {
+            console.log(`Crypto data get failed: ${err}`);
+        });
+    }, 60 * 60 * 1000);
+}
+
 module.exports = {
-    getDataAndInsertToDb: function (onSuccess, onFail) {
-        getCryptoJsonFromWeb((json) => {
-            insertDataToDb(json, () => {
-                onSuccess(response);
-            }, (err) => {
-                // insert to db failed
-                onFail(err);
-            });
-        }, (err) => {
-            // get data from web failed
-            onFail(err);
-        });
-    },
-    getLastDataFromDb: function (onSuccess, onFail) {
-        getDataFromDb((json) => {
-            onSuccess(json);
-        }, (err) => {
-            // get from db failed
-            onFail(err);
-        });
-    },
-    startDataCallInterval: function (callback) {
-        setInterval(yourFunction, 1000 * 60 * 60);
-    }
+    getDataAndInsertToDb,
+    getDataFromDb,
+    startDataUpdateInterval
 }

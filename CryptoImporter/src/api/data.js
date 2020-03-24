@@ -16,8 +16,8 @@ router.get('/', (req, res, next) => {
 
 /* GET | download crypto data and insert to db */
 router.get('/insertNew', (req, res, next) => {
-    importer.getDataAndInsertToDb((response) => {
-        res.send(response)
+    importer.getDataAndInsertToDb(() => {
+        res.send('Data inserted')
     }, (err) => {
         res.send(err)
     });

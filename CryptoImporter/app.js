@@ -3,7 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var importer = require('./src/services/importer');
+var networking = require('./src/services/networking');
 
 var indexRouter = require('./src/api/index');
 var dataRouter = require('./src/api/data');
@@ -39,6 +39,6 @@ app.use(function(err, req, res, next) {
     res.render('error');
 });
 
-importer.startDataUpdateInterval();
+networking.startDataUpdateInterval();
 
 module.exports = app;

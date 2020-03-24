@@ -1,10 +1,11 @@
 var express = require('express');
 var router = express.Router();
-var importer = require('../services/importer');
+var networking = require('../services/networking');
+var database = require('../services/database').database;
 
 /* GET | show last crypto data */
 router.get('/', (req, res, next) => {
-    importer.getLastDataFromDb((json) => {
+    database.getLastDataFromDb((json) => {
         res.render('datalist', {
             title: "Data",
             data: json
@@ -16,7 +17,7 @@ router.get('/', (req, res, next) => {
 
 /* GET | download crypto data and insert to db */
 router.get('/insertNew', (req, res, next) => {
-    importer.getDataAndInsertToDb(() => {
+    networking.getDataAndInsertToDb(() => {
         res.send('Data inserted')
     }, (err) => {
         res.send(err)

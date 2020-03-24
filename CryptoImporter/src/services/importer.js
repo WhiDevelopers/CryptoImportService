@@ -1,11 +1,9 @@
-const mongodb = require('mongodb');
 const https = require('https');
 const config = require('../config/conf')
-const MongoClient = mongodb.MongoClient;
+const MongoClient = require('mongodb').MongoClient;
 const mongoUrl = 'mongodb://localhost:27017';
 const dbName = 'CryptoImporter';
 const url = `https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=${config.COINMARKETCAP_API_KEY}&start=1&limit=50`;
-const dataRequestIntervalTime = config.DATA_REQUEST_INTERVAL_TIME;
 
 function getCryptoJsonFromWeb(onSuccess, onFail) {
     https.get(url, (resp) => {
@@ -97,7 +95,7 @@ function startDataUpdateInterval() {
     }
 
     updateData();
-    setInterval(updateData, dataRequestIntervalTime);
+    setInterval(updateData, config.DATA_REQUEST_INTERVAL_TIME);
 }
 
 module.exports = {

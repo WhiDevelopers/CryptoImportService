@@ -4,6 +4,7 @@ const MongoClient = mongodb.MongoClient;
 const mongoUrl = 'mongodb://localhost:27017';
 const dbName = 'CryptoImporter';
 const url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=0f20bc2d-4094-487d-911c-b3299b2218aa&start=1&limit=50';
+const dataRequestIntervalTime = 60 * 1000;
 
 function getCryptoJsonFromWeb(onSuccess, onFail) {
     https.get(url, (resp) => {
@@ -89,19 +90,19 @@ function getDataAndInsertToDb(onSuccess, onFail) {
 
 function startDataUpdateInterval() {
     var i = 0;
-    var fun = getDataAndInsertToDb(() => {
+    getDataAndInsertToDb(() => {
         console.log("Data inserted");
     }, (err) => {
         console.log(`Crypto data get failed: ${err}`);
     });
 
     setInterval(() => {
-        var fun = getDataAndInsertToDb(() => {
+        getDataAndInsertToDb(() => {
             console.log("Data inserted");
         }, (err) => {
             console.log(`Crypto data get failed: ${err}`);
         });
-    }, 60 * 60 * 1000);
+    }, dataRequestIntervalTime);
 }
 
 module.exports = {

@@ -2,26 +2,25 @@ var express = require('express');
 var router = express.Router();
 var importer = require('../services/importer');
 
-/* GET show last crypto data */
+/* GET | show last crypto data */
 router.get('/', (req, res, next) => {
-  importer.getLastDataFromDb((err, dataJson) => {
-    console.log('data: ' + dataJson[0].name)
-    if (err) {
-      res.send(err);
-    } else {
-      res.render('datalist', { 
-        title: "Data",
-        data: dataJson
-       });
-    }
-  });
+    importer.getLastDataFromDb((json) => {
+        res.render('datalist', {
+            title: "Data",
+            data: json
+        });
+    }, (err) => {
+        res.send(err);
+    });
 });
 
-/* GET instert crypto data to db */
+/* GET | download crypto data and insert to db */
 router.get('/insertNew', (req, res, next) => {
-  importer.getDataAndInsertToDb((response) => {
-    res.send(response)
-  });
+    importer.getDataAndInsertToDb((response) => {
+        res.send(response)
+    }, (err) => {
+        res.send(err)
+    });
 });
 
 module.exports = router;

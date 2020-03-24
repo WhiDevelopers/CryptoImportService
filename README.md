@@ -12,20 +12,20 @@ cd CryptoImporter
 npm install
 ```
 
-Run app in the same folder with script by typing
+Run in CryptoImporter folder
 ```
 npm run dev
 ```
 
-Run db in data folder
+Run db in data folder (.../CryptoImportService/CryptoImporter/data)
 ```
-mongod --dbpath /YOUR/FULL/PATH/TO/DATAFOLDER
+mongod --dbpath "/YOUR/FULL/PATH/TO/DATAFOLDER"
 ```
 
-Run in a new terminal
+Run in a new terminal (once)
 ```
 mongo # opens mongo shell
-use CryptoImporter # creates collection (I think)
+use CryptoImporter # creates collection
 ```
 
 When the server is running, you don't need to restart after changes, saving triggers rebuild, then just refresh

@@ -1,31 +1,55 @@
+const mongodb = require('mongodb');
+const https = require('https');
+const MongoClient = mongodb.MongoClient;
 const mongoUrl = 'mongodb://localhost:27017';
 const dbName = 'CryptoImporter';
-const mongodb = require('mongodb');
+const url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=0f20bc2d-4094-487d-911c-b3299b2218aa&start=1&limit=50';
 
-function getDataFromDb(callback) {
-    var MongoClient = mongodb.MongoClient;
+function getCryptoJsonFromWeb(onSuccess, onFail) {
+    https.get(url, (resp) => {
+        let data = '';
 
-    console.log('Connecting to db');
+        // A chunk of data has been recieved.
+        resp.on('data', (chunk) => {
+            data += chunk;
+        });
+
+        // The whole response has been received. Print out the result.
+        resp.on('end', () => {
+            var json = JSON.parse(data); // FIXME parse might fail
+            onSuccess(json);
+        });
+
+    }).on("error", err => {
+        console.log("Error getting json crypto data: " + err.message);
+        onFail(err);
+    });
+}
+
+function getDataFromDb(onSuccess, onFail) {
     MongoClient.connect(mongoUrl, function (err, client) {
         const db = client.db(dbName);
 
         if (err) {
             console.log('Unable to connect to the db', err);
-            callback(err, null);
+            // db connection fail
+            onFail(err);
         } else {
             db.collection('CryptoImporter', (err, collection) => {
                 if (err) {
                     console.log('db err', err);
                     db.close();
-                    callback(err, null);
+                    // getting db collection fail
+                    onFail(err);
                 } else
                     collection.find({}).toArray(function (err, result) {
                         if (err) {
-                            callback(err, null);
+                            // getting from collection fail
+                            onFail(err);
                         } else if (result.length) {
-                            callback(null, result[0]["data"]);
+                            onSuccess(result[0]["data"]);
                         } else {
-                            callback("db empty", null);
+                            onFail("db empty");
                         }
                         client.close();
                     });
@@ -34,25 +58,22 @@ function getDataFromDb(callback) {
     });
 }
 
-function insertDataToDb(json, callback) {
-    var MongoClient = mongodb.MongoClient;
-
-    console.log('Connecting to db');
+function insertDataToDb(json, onSuccess, onFail) {
     MongoClient.connect(mongoUrl, function (err, client) {
         const db = client.db(dbName);
 
         if (err) {
             console.log('Unable to connect to the db', err);
-            callback(err);
+            onFail(err);
         } else {
             db.collection('CryptoImporter', (err, collection) => {
                 if (err) {
                     console.log('db err', err);
-                    callback(err);
+                    onFail(err);
                 } else
                     collection.insertOne(json, () => {
                         console.log('json inserted');
-                        callback(json)
+                        onSuccess(json)
                     });
             });
         }
@@ -60,38 +81,28 @@ function insertDataToDb(json, callback) {
 }
 
 module.exports = {
-    getDataAndInsertToDb: function (callback) {
-        const url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=0f20bc2d-4094-487d-911c-b3299b2218aa&start=1&limit=50';
-        const https = require('https');
-
-        https.get(url, (resp) => {
-            let data = '';
-
-            // A chunk of data has been recieved.
-            resp.on('data', (chunk) => {
-                data += chunk;
+    getDataAndInsertToDb: function (onSuccess, onFail) {
+        getCryptoJsonFromWeb((json) => {
+            insertDataToDb(json, () => {
+                onSuccess(response);
+            }, (err) => {
+                // insert to db failed
+                onFail(err);
             });
-
-            // The whole response has been received. Print out the result.
-            resp.on('end', () => {
-                var json = JSON.parse(data);
-                insertDataToDb(json, (response) => {
-                    callback(response)
-                });
-            });
-
-        }).on("error", err => {
-            console.log("Error getting json crypto data: " + err.message);
-            callback(err);
+        }, (err) => {
+            // get data from web failed
+            onFail(err);
         });
     },
-    getLastDataFromDb: function (callback) {
-        getDataFromDb((err, json) => {
-            if (err) {
-                callback(err, null);
-            } else {
-                callback(null, json);
-            }
+    getLastDataFromDb: function (onSuccess, onFail) {
+        getDataFromDb((json) => {
+            onSuccess(json);
+        }, (err) => {
+            // get from db failed
+            onFail(err);
         });
+    },
+    startDataCallInterval: function (callback) {
+        setInterval(yourFunction, 1000 * 60 * 60);
     }
 }

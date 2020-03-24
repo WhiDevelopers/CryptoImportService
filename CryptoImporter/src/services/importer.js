@@ -4,8 +4,7 @@ const config = require('../config/conf')
 const MongoClient = mongodb.MongoClient;
 const mongoUrl = 'mongodb://localhost:27017';
 const dbName = 'CryptoImporter';
-const apiKey = config.COINMARKETCAP_API_KEY;
-const url = `https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=${apiKey}&start=1&limit=50`;
+const url = `https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=${config.COINMARKETCAP_API_KEY}&start=1&limit=50`;
 const dataRequestIntervalTime = config.DATA_REQUEST_INTERVAL_TIME;
 
 function getCryptoJsonFromWeb(onSuccess, onFail) {
@@ -16,12 +15,10 @@ function getCryptoJsonFromWeb(onSuccess, onFail) {
             data += chunk; // A chunk of data has been recieved.
         });
 
-
         resp.on('end', () => { // The whole response has been received.
             var json = JSON.parse(data); // FIXME parse might fail
             onSuccess(json);
         });
-
     }).on("error", err => {
         console.log("Error getting json crypto data: " + err.message);
         onFail(err);

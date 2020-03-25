@@ -3,15 +3,15 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var networking = require('./src/services/networking');
+var networking = require('./services/networking');
 
-var indexRouter = require('./src/api/index');
-var dataRouter = require('./src/api/data');
+var indexRouter = require('./api/index');
+var dataRouter = require('./api/data');
 
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', __dirname + '/../views');
 app.set('view engine', 'jade');
 
 app.use(logger('dev'));

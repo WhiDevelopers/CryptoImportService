@@ -1,3 +1,20 @@
+// {
+//     "compilerOptions": {
+//       "module": "commonjs",
+//       "esModuleInterop": false,
+//       "target": "es6",
+//       "noImplicitAny": true,
+//       "moduleResolution": "node",
+//       "sourceMap": true,
+//       "outDir": "dist",
+//       "baseUrl": ".",
+//       "paths": {
+//         "*": ["node_modules/", "src/types/*"]
+//       }
+//     },
+//     "include": ["src/**/*"]
+// }
+
 {
   "compilerOptions": {
     /* Basic Options */
@@ -12,7 +29,7 @@
     // "declarationMap": true,                /* Generates a sourcemap for each corresponding '.d.ts' file. */
     // "sourceMap": true,                     /* Generates corresponding '.map' file. */
     // "outFile": "./",                       /* Concatenate and emit output to single file. */
-    // "outDir": "./dist",                    /* Redirect output structure to the directory. */
+    "outDir": "./dist",                    /* Redirect output structure to the directory. */
     "rootDir": "./src",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
     // "composite": true,                     /* Enable project compilation */
     // "tsBuildInfoFile": "./",               /* Specify file to store incremental compilation information */

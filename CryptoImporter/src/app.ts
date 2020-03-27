@@ -1,13 +1,16 @@
+import { Database } from "./services/database";
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var morgan = require('morgan');
 var networking = require('./services/networking');
+var database: Database = require('./services/database').database;
 var indexRouter = require('./api/index');
 var dataRouter = require('./api/data');
 var app = express();
-var fs = require('fs')
+var fs = require('fs');
 
 // view engine setup
 app.set('views', __dirname + '/../views');  
@@ -43,5 +46,13 @@ app.use(function (err: { message: any; status: any; }, req: { app: { get: (arg0:
 });
 
 networking.startDataUpdateInterval();
+let rawData = fs.readFileSync(__dirname + '/../../Initial Crypto Data.json');
+let json = JSON.parse(rawData);
+
+database.initCollection2(json, () => {
+    console.log("insert to col2 worked");
+}, (err) => {
+    console.log(`error: ${err}`);
+});
 
 module.exports = app;

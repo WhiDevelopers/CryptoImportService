@@ -16,3 +16,8 @@ Run in CryptoImporter folder
 ```
 npm run dev
 ```
+
+Tevo 1 liner. Selleks et terminal lahti teha ja kopeerida 1 lause
+```
+cd cryptoimporter && npm run dev
+```

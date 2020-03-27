@@ -17,10 +17,13 @@ export function getDataAndInsertToDb(onSuccess, onFail) {
 
 export function startDataUpdateInterval() {
     function updateData() {
+        var today = new Date();
+        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        
         getDataAndInsertToDb(() => {
-            console.log("Data inserted");
+            console.log(time + " - Data inserted");
         }, (err) => {
-            console.log(`Crypto data get failed: ${err}`);
+            console.log(time + ` - Crypto data get failed: ${err}`);
         });
     }
 

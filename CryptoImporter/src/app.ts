@@ -1,24 +1,30 @@
+import { Database } from "./services/database";
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+var morgan = require('morgan');
 var networking = require('./services/networking');
-
+var database: Database = require('./services/database').database;
 var indexRouter = require('./api/index');
 var dataRouter = require('./api/data');
-
 var app = express();
+var fs = require('fs');
 
 // view engine setup
-app.set('views', __dirname + '/../views');
+app.set('views', __dirname + '/../views');  
 app.set('view engine', 'jade');
 
-app.use(logger('dev'));
+var accessLogStream = fs.createWriteStream(path.join(__dirname, '/../access.log'), { flags: 'a' })
+var morganDateFormat = ':date[clf] :method :url :status :response-time ms - :res[content-length]'
+app.use(morgan(morganDateFormat)); // to console
+app.use(morgan(morganDateFormat, { stream: accessLogStream })); // create a write stream (in append mode)
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '/../public')));
 
 app.use('/', indexRouter);
 app.use('/data', dataRouter);
@@ -40,5 +46,13 @@ app.use(function (err: { message: any; status: any; }, req: { app: { get: (arg0:
 });
 
 networking.startDataUpdateInterval();
+let rawData = fs.readFileSync(__dirname + '/../../Initial Crypto Data.json');
+let json = JSON.parse(rawData);
+
+database.initCollection2(json, () => {
+    console.log("insert to col2 worked");
+}, (err) => {
+    console.log(`error: ${err}`);
+});
 
 module.exports = app;

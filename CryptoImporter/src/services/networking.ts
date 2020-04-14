@@ -52,7 +52,7 @@ function getCryptoJsonFromWeb(onSuccess, onFail) {
 function convertJson(onSuccess, jsonArray) {
     for (let i = 0; i < 51; i++) {
         let newJson = convertCoinToJson(onSuccess, jsonArray.data[i]);
-        insertToDB(newJson);
+      //  insertToDB(newJson);
     }
 }
 

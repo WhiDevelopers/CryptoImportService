@@ -4,51 +4,40 @@ const dbName = "CryptoImporter";
 const collection1 = "collection1";
 const collection2 = "collection2"; // TODO better names
 
-export class Database implements IDatabase {
-  getLastDataFromDb(
-    onSuccess: (json: any) => void,
-    onFail: (err: any) => void
-  ): void {
-    MongoClient.connect(mongoUrl, function(err: any, client: any) {
-      if (err) {
-        console.log("Unable to connect to the db", err);
-        onFail(err); // db connection fail
-      } else {
-        client
-          .db(dbName)
-          .collection(collection1, (err: any, collection: any) => {
-            if (err) {
-              console.log("db err", err);
-              onFail(err); // getting db collection fail
-            } else
-              collection.find({}).toArray(function(err: any, result: any) {
-                if (err) {
-                  onFail(err); // getting from collection fail
-                } else if (result.length) {
-                  onSuccess(result[0]["data"]);
-                } else {
-                  onFail("db empty");
-                }
-                client.close();
-              });
-          });
-      }
-    });
-  }
+class Database implements IDatabase {
+    getLastDataFromDb(onSuccess: (json: any) => void, onFail: (err: any) => void): void {
+        MongoClient.connect(mongoUrl, function (err: any, client: any) {
+            const db = client.db(dbName);
 
-  insertDataToDb(
-    json: any,
-    onSuccess: (json: any) => void,
-    onFail: (err: any) => void
-  ): void {
-    MongoClient.connect(mongoUrl, function(err: any, client: any) {
-      if (err) {
-        console.log("Unable to connect to the db", err);
-        onFail(err);
-      } else {
-        client
-          .db(dbName)
-          .collection(collection1, (err: any, collection: any) => {
+            if (err) {
+                console.log('Unable to connect to the db', err);
+                onFail(err); // db connection fail
+            } else {
+                db.collection('CryptoImporter', (err: any, collection: any) => {
+                    if (err) {
+                        console.log('db err', err);
+                        db.close();
+                        onFail(err); // getting db collection fail
+                    } else
+                        collection.find({}).toArray(function (err: any, result: any) {
+                            if (err) {
+                                onFail(err); // getting from collection fail
+                            } else if (result.length) {
+                                onSuccess(result[0]["data"]);
+                            } else {
+                                onFail("db empty");
+                            }
+                            client.close();
+                        });
+                });
+            }
+        });
+    }
+
+    insertDataToDb(json: any, onSuccess: (json: any) => void, onFail: (err: any) => void): void {
+        MongoClient.connect(mongoUrl, function (err: any, client: any) {
+            const db = client.db(dbName);
+
             if (err) {
               console.log("db err", err);
               onFail(err);
@@ -87,10 +76,59 @@ export class Database implements IDatabase {
                   }
                 });
             }
-          });
-      }
-    });
-  }
+        });
+    }
+
+    insertCustomCoinArray(jsonArray: any, onSuccess: () => void, onFail: (err: any) => void): void {
+        // TODO
+        
+        // MongoClient.connect(mongoUrl, function (err: any, client: any) {
+        //     const db = client.db(dbName);
+        //     if (err) {
+        //         console.log('Unable to connect to the db', err);
+        //         onFail(err);
+        //     } else {
+        //         db.collection('CryptoImporter', (err: any, collection: any) => {
+        //             if (err) {
+        //                 console.log('db err', err);
+        //                 onFail(err);
+        //             } else
+        //                 collection.insertMany(jsonArray, () => {
+        //                     onSuccess()
+        //                 });
+        //         });
+        //     }
+        // });
+    }
+
+    getAllCoinDataFromDb(onSuccess: (json: any) => void, onFail: (err: any) => void): void {
+        MongoClient.connect(mongoUrl, function (err: any, client: any) {
+            const db = client.db(dbName);
+
+            if (err) {
+                console.log('Unable to connect to the db', err);
+                onFail(err); // db connection fail
+            } else {
+                db.collection('CryptoImporter', (err: any, collection: any) => {
+                    if (err) {
+                        console.log('db err', err);
+                        db.close();
+                        onFail(err); // getting db collection fail
+                    } else
+                        collection.find({}).toArray(function (err: any, result: any) {
+                            if (err) {
+                                onFail(err); // getting from collection fail
+                            } else if (result.length) {
+                                onSuccess(result);
+                            } else {
+                                onFail("db empty");
+                            }
+                            client.close();
+                        });
+                });
+            }
+        });
+    }
 }
 
 export let database: Database = new Database();
